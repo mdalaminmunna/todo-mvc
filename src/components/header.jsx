@@ -3,11 +3,6 @@ import { useState } from "react";
 export function Header({ setData }) {
   const [todoText, setTodoText] = useState("");
 
-  const prev = {
-    todos: [],
-    filter: "all",
-    asdasdasd: "",
-  };
   return (
     <header className="header">
       <h1>Todo App</h1>
