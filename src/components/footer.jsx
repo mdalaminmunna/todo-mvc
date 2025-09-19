@@ -1,6 +1,9 @@
 export function Footer({ data, setData }) {
   const clearCompleted = () => {
-    setTodos(todos.filter((todo) => !todo.completed));
+    setData((prev) => ({
+      ...prev,
+      todos: prev.todos.filter((todo) => !todo.completed),
+    }));
   };
 
   return (

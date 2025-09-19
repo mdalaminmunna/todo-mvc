@@ -1,25 +1,17 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
-export function Main({ data, setData }) {
-  const [editingId, setEditingId] = useState(null);
-  const [editText, setEditText] = useState("");
-  const editInputRef = useRef(null);
-
-  useEffect(() => {
-    if (editingId !== null && editInputRef.current) {
-      editInputRef.current.focus();
-    }
-  }, [editingId]);
+export function TodoList({ data, setData }) {
+  const [editing, setEditing] = useState({ id: null, text: "" });
 
   const toggleTodo = (id) => {
-    setData((prev) => {
-      return {
-        ...prev,
-        todos: prev.todos.map((todo) =>
-          todo.id === id ? { ...todo, completed: !todo.completed } : todo
-        ),
-      };
-    });
+    setData((prev) => ({
+      // return {
+      ...prev,
+      todos: prev.todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      ),
+      // };
+    }));
   };
 
   const deleteTodo = (id) => {
@@ -32,28 +24,33 @@ export function Main({ data, setData }) {
   };
 
   const toggleAll = () => {
-    const allCompleted = todos.every((todo) => todo.completed);
-    setTodos(todos.map((todo) => ({ ...todo, completed: !allCompleted })));
+    const allCompleted = data.todos.every((todo) => todo.completed);
+    setData((prev) => ({
+      ...prev,
+      todos: prev.todos.map((todo) => ({
+        ...todo,
+        completed: !allCompleted,
+      })),
+    }));
   };
 
   const startEditing = (id, text) => {
-    setEditingId(id);
-    setEditText(text);
+    setEditing({ id, text });
   };
 
   const saveEdit = () => {
-    if (editText.trim()) {
-      setTodos(
-        todos.map((todo) =>
-          todo.id === editingId ? { ...todo, text: editText.trim() } : todo
-        )
-      );
+    if (editing.text.trim()) {
+      setData((prev) => ({
+        ...prev,
+        todos: prev.todos.map((todo) =>
+          todo.id === editing.id ? { ...todo, text: editing.text.trim() } : todo
+        ),
+      }));
     } else {
       // Delete if edited to empty
-      deleteTodo(editingId);
+      deleteTodo(editing.id);
     }
-    setEditingId(null);
-    setEditText("");
+    setEditing({ id: null, text: "" });
   };
 
   const handleEditKeyDown = (e) => {
@@ -65,8 +62,7 @@ export function Main({ data, setData }) {
   };
 
   const cancelEdit = () => {
-    setEditingId(null);
-    setEditText("");
+    setEditing({ id: null, text: "" });
   };
 
   return (
@@ -96,7 +92,7 @@ export function Main({ data, setData }) {
               <li
                 key={todo.id}
                 className={`${todo.completed ? "completed" : ""} ${
-                  editingId === todo.id ? "editing" : ""
+                  editing.id === todo.id ? "editing" : ""
                 }`}
                 onDoubleClick={() => startEditing(todo.id, todo.text)}
               >
@@ -113,12 +109,13 @@ export function Main({ data, setData }) {
                     onClick={() => deleteTodo(todo.id)}
                   />
                 </div>
-                {editingId === todo.id && (
+                {editing.id === todo.id && (
                   <input
-                    ref={editInputRef}
                     className="edit"
-                    value={editText}
-                    onChange={(e) => setEditText(e.target.value)}
+                    value={editing.text}
+                    onChange={(e) =>
+                      setEditing((prev) => ({ ...prev, text: e.target.value }))
+                    }
                     onBlur={saveEdit}
                     onKeyDown={handleEditKeyDown}
                   />
