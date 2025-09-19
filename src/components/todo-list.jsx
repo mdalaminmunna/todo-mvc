@@ -5,12 +5,10 @@ export function TodoList({ data, setData }) {
 
   const toggleTodo = (id) => {
     setData((prev) => ({
-      // return {
       ...prev,
       todos: prev.todos.map((todo) =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
       ),
-      // };
     }));
   };
 
